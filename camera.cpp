@@ -203,23 +203,6 @@ void Camera::SetupVideo( ) {
 	// needs its own "permission" to setup and its own event handler.
 }
 
-/*
-void Camera::SetupAudio( void ) {
-	// We ask for PCM, as we want to process the data.  If we were piping it across the network,
-	// we might ask for AAC instead, as that is a compressed format, not uncompressed raw data
-	AVDevice->AudioEncodingFormat = CameraCaptureAudioFormat::Pcm;
-
-	// Create the sink object
-	MakeAndInitialize<CameraAudioSink>(&this->audioSink);
-
-	// Tell the audioSink where we are, so they can call back to us
-	audioSink->camera = this;
-	
-	// Hook it up to the capture device
-	nativeAVDevice->SetAudioSampleSink(this->audioSink);
-}
-*/
-
 void Camera::processingThread( IAsyncAction^ operation ) {
 	// Reserve memory
 	framePool = new std::vector<unsigned int *>();
@@ -300,9 +283,3 @@ void CameraVideoSink::OnSampleAvailable( ULONGLONG hnsPresentationTime, ULONGLON
 	} else
 		OutputDebugStringA("Dropped a frame!");
 }
-
-/*
-void CameraAudioSink::OnSampleAvailable( ULONGLONG hnsPresentationTime, ULONGLONG hnsSampleDuration, DWORD cbSample, BYTE* pSample) {
-	camera->OnAudioReady( ArrayReference<float>((float*)pSample, cbSample/sizeof(float)) );
-}
-*/

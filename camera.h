@@ -65,17 +65,6 @@ namespace libvideo
 		Camera^ camera;
 	};
 
-	/*
-	class CameraAudioSink : public COMParent(ICameraCaptureSampleSink) {
-		// This gets called whenever an audio buffer is available
-		IFACEMETHODIMP_(void) OnSampleAvailable( ULONGLONG hnsPresentationTime, ULONGLONG hnsSampleDuration, DWORD cbSample, BYTE* pSample);
-
-	public:
-		// This public Camera pointer is for calling back to Camera when we have a buffer available
-		Camera^ camera;
-	};
-	*/
-
     public ref class Camera sealed
     {
 		// These friend declarations are necessary so that the Sinks can access the events inside of Camera
