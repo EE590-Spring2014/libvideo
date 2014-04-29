@@ -86,7 +86,7 @@ namespace libvideo
     public:
 		// This opens the camera for a certain capture and preview format, a certain camera sensor, and
 		// capturing audio or not. See http://goo.gl/Qlo6L for "known good" dimensions for capture/preview.
-        Camera( Size captureDimensions, Size previewDimensions, CameraSensorLocation location );
+        Camera( Size captureDimensions, CameraSensorLocation location );
 
 		// Cleans stuff up
 		virtual ~Camera();
@@ -95,7 +95,7 @@ namespace libvideo
 		void Start();
 		void Stop();
 
-		event FrameReadyEvent^ OnPreviewFrameReady;
+		event FrameReadyEvent^ OnFrameReady;
 		event CompressedFrameReadyEvent^ OnCompressedFrameReady;
 		//event AudioReadyEvent^ OnAudioReady;
 		event CameraStateChange^ Initialized;

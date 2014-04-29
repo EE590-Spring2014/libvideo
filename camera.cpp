@@ -11,12 +11,12 @@ using namespace Platform;
 // Need this for our threading types such as ThreadPool
 using namespace Windows::System::Threading;
 
-Camera::Camera( Size captureDimensions, Size previewDimensions, CameraSensorLocation sensor )
+Camera::Camera( Size previewDimensions, CameraSensorLocation sensor )
 {
 	// First, check to make sure that captureDimensions is valid:
-	CheckResolutions( captureDimensions, previewDimensions, sensor );
+	CheckResolutions( previewDimensions, previewDimensions, sensor );
 
-	this->captureResolution = captureDimensions;
+	this->captureResolution = previewDimensions;
 	this->previewResolution = previewDimensions;
 
 	// If it is, start opening it, we'll quit out of the while loop at the end of this loop
@@ -28,7 +28,7 @@ Camera::Camera( Size captureDimensions, Size previewDimensions, CameraSensorLoca
 		openOp = AudioVideoCaptureDevice::OpenAsync(sensor, captureDimensions );
 	else
 	*/
-	openOp = AudioVideoCaptureDevice::OpenForVideoOnlyAsync(sensor, captureDimensions );
+	openOp = AudioVideoCaptureDevice::OpenForVideoOnlyAsync(sensor, this->captureResolution );
 
 	// Start up our frame-processing thread
 	processingThreadHandle = ThreadPool::RunAsync( ref new WorkItemHandler(this, &Camera::processingThread) );
@@ -38,7 +38,7 @@ Camera::Camera( Size captureDimensions, Size previewDimensions, CameraSensorLoca
 	// to dealing with.  Additionally, this is more "pure" C++, not C++/CX, so in some cases the event
 	// keyword etc. aren't even available to be used, as the client code isn't C++/CX!
 	openOp->Completed = ref new AsyncOperationCompletedHandler<AudioVideoCaptureDevice^>(
-		[this,captureDimensions,previewDimensions](IAsyncOperation<AudioVideoCaptureDevice^> ^operation, Windows::Foundation::AsyncStatus status ) {
+		[this,previewDimensions](IAsyncOperation<AudioVideoCaptureDevice^> ^operation, Windows::Foundation::AsyncStatus status ) {
 			if( status == Windows::Foundation::AsyncStatus::Completed ) {
 				// GetResults() gives us the actual opened AudioVideoCaptureDevice!
 				AVDevice = operation->GetResults();
@@ -238,7 +238,7 @@ void Camera::processingThread( IAsyncAction^ operation ) {
 			if( previewQueue.size() ) {
 				unsigned int * p = previewQueue.front();
 
-				this->OnPreviewFrameReady( (unsigned int)this->previewResolution.Width, (unsigned int)this->previewResolution.Height, (uintptr_t)p );
+				this->OnFrameReady( (unsigned int)this->previewResolution.Width, (unsigned int)this->previewResolution.Height, (uintptr_t)p );
 				previewQueueMutex.lock();
 				previewQueue.pop_front();
 				previewQueueMutex.unlock();
