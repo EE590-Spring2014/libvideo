@@ -11,6 +11,13 @@ using namespace Platform;
 // Need this for our threading types such as ThreadPool
 using namespace Windows::System::Threading;
 
+void Camera::FocusForever() {
+	auto focusComplete = AVDevice->FocusAsync();
+	focusComplete->Completed = ref new AsyncOperationCompletedHandler<CameraFocusStatus>([this](IAsyncOperation<CameraFocusStatus> ^operation, Windows::Foundation::AsyncStatus status) {
+		this->FocusForever();
+	});
+}
+
 Camera::Camera( Size previewDimensions, CameraSensorLocation sensor )
 {
 	// First, check to make sure that captureDimensions is valid:
@@ -59,6 +66,11 @@ Camera::Camera( Size previewDimensions, CameraSensorLocation sensor )
 
 				// Next, we setup the capture video input:
 				this->SetupVideo();
+
+				auto focusComplete = AVDevice->FocusAsync();
+				focusComplete->Completed = ref new AsyncOperationCompletedHandler<CameraFocusStatus>([this](IAsyncOperation<CameraFocusStatus> ^operation, Windows::Foundation::AsyncStatus status) {
+					this->FocusForever();
+				});
 
 				// Setup audio input, if it's wanted
 				//if( captureAudio )
@@ -122,6 +134,17 @@ void Camera::Stop() {
 			}
 		);
 	}
+}
+
+
+void Camera::StartAutoFocus() {
+	if( this->recording ) {
+		AVDevice->FocusAsync();
+	}
+}
+
+void Camera::ResetAutoFocus() {
+	AVDevice->ResetFocusAsync();
 }
 
 

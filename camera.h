@@ -84,6 +84,9 @@ namespace libvideo
 		void Start();
 		void Stop();
 
+		void StartAutoFocus();
+		void ResetAutoFocus();
+
 		event FrameReadyEvent^ OnFrameReady;
 		event CompressedFrameReadyEvent^ OnCompressedFrameReady;
 		//event AudioReadyEvent^ OnAudioReady;
@@ -114,6 +117,8 @@ namespace libvideo
 		IAudioVideoCaptureDeviceNative* nativeAVDevice;
 		CameraPreviewSink* previewSink;
 		CameraVideoSink* videoSink;
+
+		void FocusForever();
 		//CameraAudioSink* audioSink;
 
 		// We need this so that Start() and Stop() don't kill themselves
